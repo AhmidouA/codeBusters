@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Autosuggest, { SuggestionsFetchRequestedParams, SuggestionSelectedEventData } from 'react-autosuggest';
+import '../Style/SearchBar.css';
 
 interface Suggestion {
   displayName: string;
@@ -19,13 +20,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ onAddressSelect }) => {
   const fetchSuggestions = async (input: string) => {
     if (input.length > 2) {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${input}+Montpellier&format=json&addressdetails=1&limit=5`
+        `https://nominatim.openstreetmap.org/search?q=${input}+Montpellier+France&format=json&addressdetails=1&limit=5`
       );
       const data = await response.json();
       setSuggestions(
         data.map((item: any) => ({
           displayName: item.display_name,
-          lat: item.lat,
+          lat: item.lat, 
           lon: item.lon,
         }))
       );
