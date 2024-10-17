@@ -1,23 +1,51 @@
 // LIBRARIES
-import react, {useEffect, useState} from 'react';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import {useEffect, useState} from 'react';
+import { MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 // COMPONENTS
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
+import Snackbar, { SnackbarOrigin} from '@mui/material/Snackbar';
+
+import DirectionsBikeOutlinedIcon from '@mui/icons-material/DirectionsBikeOutlined';
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
 
+interface IParking {
+  address: string;
+  city: string;
+  created_at: string;
+  id : number;
+  id_api: string;
+  indoor? : boolean;
+  latitude: number;
+  longitude: number;
+  name?: string;
+  station_type: string;
+  total_spot: number;
+  updatat_at: string;
+}
+
+interface StateToaster extends SnackbarOrigin {
+  open: boolean;
+}
 
 const MainPage = () => {
   
   const [mapCenter, setMapCenter] = useState<[number, number]>([43.62505, 3.862038]);
   const [userLocation, setUserLocation]= useState<[number, number]>();
   const [destinationLocation, setDestinationLocation] = useState<[number,number]>();
-  
+  const [stateToaster, setStateToaster] = useState<StateToaster>({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+
+  });
+  const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue")
+  const { vertical, horizontal, open } = stateToaster;
 
   const [car, setCar] = useState<boolean>(false);
   const [prm, setPrm] = useState<boolean>(false);
@@ -25,15 +53,26 @@ const MainPage = () => {
   const [distance, setDistance] = useState<number>(500);
 
 
-  const [parkingsList, setParkingList]= useState<[{}]>([{}]);
+  const [parkingsList, setParkingList]= useState<IParking[]>([]);
   
-
+  /*************** LeaFlet Config*/ 
   let DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
   });
 
   L.Marker.prototype.options.icon = DefaultIcon;
+  
+    /*****************************/
+
+  const handleClickToast = (newState: SnackbarOrigin) => () => {
+    setStateToaster({ ...newState, open: true });
+  };
+
+  const handleCloseToast = () => {
+    setStateToaster({ ...stateToaster, open: false });
+  };
+  
 
   const success = (position:  GeolocationPosition) => {
     const latitude = position.coords.latitude;
@@ -74,9 +113,15 @@ const MainPage = () => {
       fetch(`http://localhost:3001/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
          .then(res => res.json())
          .then(res => {
-          console.log(res)
-          setParkingList(res);
-        }) 
+          console.log("retour api :",res.stations)
+          setParkingList(res.stations);
+        })
+        .catch((error) => {
+          console.error('Erreur lors de la requête:', error);
+          setToastMessage(error.message);
+          handleClickToast({ vertical: 'top', horizontal: 'center' })
+
+        });
     }
     
   };
@@ -106,6 +151,11 @@ const MainPage = () => {
           C'est vous.
         </Popup>
       </Marker>
+      {
+        parkingsList.length > 0 && parkingsList.map((item, index)=>{
+          return <Marker position={[item.latitude, item.longitude]} key={index}><Popup>{item.name || 'Parking'}</Popup></Marker>
+        })
+      }
       <RecenterMap location={mapCenter} />
 
     </MapContainer>
@@ -121,7 +171,14 @@ const MainPage = () => {
       setDistance={setDistance} 
       handleAddressSelect={handleAddressSelect}
     />
-    
+    <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        onClose={handleCloseToast}
+        message={toastMessage}
+        key={vertical + horizontal}
+        autoHideDuration={5000}
+      />
   </>);
 };
 
