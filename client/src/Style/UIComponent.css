@@ -1,0 +1,11 @@
+.UI-Element {
+  position: fixed;
+  z-index: 2;
+}
+
+.search-menu{
+  background-color: #FFFFFFE6;
+  width: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
