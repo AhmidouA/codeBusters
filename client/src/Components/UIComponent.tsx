@@ -15,7 +15,7 @@ const UIComponent = (props:any) => {
     <SearchBar onAddressSelect={props.handleAddressSelect}/>
 
     <FormControlLabel
-      control={<Checkbox checked={props.car} onChange={(e) => props.setCar(e.target.checked)} />}
+      control={<Checkbox checked={props.car} onChange={(e) => props.setBike(e.target.checked)} />}
       label="Car"
     />
     <FormControlLabel
@@ -24,7 +24,7 @@ const UIComponent = (props:any) => {
     />
     <FormControlLabel
       control={<Checkbox checked={props.prm} onChange={(e) => props.setPrm(e.target.checked)} />}
-      label="PRM"
+      label="PMR"
     />
   
     <Typography gutterBottom>Distance: {props.distance} m</Typography>

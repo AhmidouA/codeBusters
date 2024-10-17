@@ -2,14 +2,13 @@
 import {useEffect, useState} from 'react';
 import { MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
 import icon from "leaflet/dist/images/marker-icon.png";
-import L from "leaflet";
+import L, { Icon } from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 // COMPONENTS
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
 import Snackbar, { SnackbarOrigin} from '@mui/material/Snackbar';
-
-import DirectionsBikeOutlinedIcon from '@mui/icons-material/DirectionsBikeOutlined';
+import { DirectionsBike } from '@mui/icons-material'
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
@@ -47,11 +46,11 @@ const MainPage = () => {
   const { vertical, horizontal, open } = stateToaster;
   const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue");
   const [freeSlots, setFreeSlots] = useState<number>(0)
+  const [typeStation, setTypeStation]= useState<string>('CAR');
   
 
   /***** Variables pour les filtres *******/
-  const [car, setCar] = useState<boolean>(false);
-  const [prm, setPrm] = useState<boolean>(false);
+  const [pmr, setPmr] = useState<boolean>(false);
   const [bike, setBike] = useState<boolean>(false);
   const [distance, setDistance] = useState<number>(500);
 
@@ -65,7 +64,30 @@ const MainPage = () => {
   });
 
   L.Marker.prototype.options.icon = DefaultIcon;
-  
+
+  const bikeIcon = new Icon ({
+    iconUrl : '/bike.svg',
+    iconSize : [35,35],
+    iconAnchor : [22,94], // point de l'icône qui correspondra à l'emplacement du marqueur
+    popupAnchor : [-3, -76] // point à partir duquel la fenêtre popup doit s'ouvrir par rapport à l'iconAnchor
+
+  })
+
+  const finishIcon = new Icon ({
+    iconUrl : '/finish.svg',
+    iconSize : [35,35],
+    iconAnchor : [22,94],
+    popupAnchor : [-3, -76]
+
+  })
+
+  const parkingIcon = new Icon ({
+    iconUrl : '/parking.svg',
+    iconSize : [35,35],
+    iconAnchor : [22,94],
+    popupAnchor : [-3, -76]
+
+  })
     /*****************************/
 
   const handleClickToast = (newState: SnackbarOrigin) => () => {
@@ -108,15 +130,18 @@ const MainPage = () => {
     }
   }, []);
 
+  useEffect(()=>{
+    setTypeStation(bike ? 'BIKE': 'CAR')
+  }, [bike])
+
   const handleAddressSelect = (coords: [number, number]) => {
     setDestinationLocation(coords);
     if(destinationLocation){
       setMapCenter(destinationLocation);
-      // const type = bike ? 'bikes' : 'cars';
+      
       fetch(`http://localhost:3001/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
          .then(res => res.json())
          .then(res => {
-          console.log("retour api :",res.stations)
           setParkingList(res.stations);
         })
         .catch((error) => {
@@ -154,20 +179,31 @@ const MainPage = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
-      <Marker position={mapCenter}>
-        <Popup>
-          C'est vous.
-        </Popup>
-      </Marker>
+      { userLocation &&
+        <Marker position={userLocation}>
+          <Popup>C'est vous</Popup>
+        </Marker>
+      }
+      { destinationLocation &&
+        <Marker position={destinationLocation} icon={finishIcon}>
+          <Popup>
+            Votre arrivée
+          </Popup>
+        </Marker>
+      }
+      
       {
         parkingsList.length > 0 && parkingsList.map((item, index)=>{
-          return <Marker 
-            position={[item.latitude, item.longitude]}
-            key={index}
-            eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}>
-              <Popup>{item.name || 'Parking'}</Popup>
-          </Marker>
+          if(typeStation === item.station_type){
+            return <Marker 
+              position={[item.latitude, item.longitude]}
+              key={index}
+              eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
+              icon={typeStation === 'CAR' ? parkingIcon : bikeIcon}>
+              <Popup>{typeStation === 'CAR' ? item.name : item.address}<br />
+              {`${freeSlots}/${item.total_spot} places libres`}</Popup>
+            </Marker>
+          }      
         })
       }
       <RecenterMap location={mapCenter} />
@@ -175,10 +211,9 @@ const MainPage = () => {
     </MapContainer>
 
     <UIComponent 
-      car={car}
-      setCar={setCar}
-      prm={prm}
-      setPrm={setPrm}
+      car={!bike}
+      prm={pmr}
+      setPrm={setPmr}
       bike={bike}
       setBike={setBike}
       distance={distance}
