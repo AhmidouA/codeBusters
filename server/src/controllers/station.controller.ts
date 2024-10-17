@@ -43,7 +43,6 @@ export const getStations = async (req: Request, res: Response) => {
             message: "Internal Server Error",
         });
     }
-    res.status(200).json({ message: "Liste des stations" });
 };
 
 export const importBikeStations = async (req: Request, res: Response) => {
