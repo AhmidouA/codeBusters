@@ -5,7 +5,40 @@
 
 .search-menu{
   background-color: #FFFFFFE6;
-  width: 50%;
+  padding: 20px;
+  width: fit-content;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.checkbox-and-icon{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: fit-content;
+}
+
+.filters-row{
+  display: grid;
+  width: 100%px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+
+.distance-slider{
+  display: grid;
+  grid-template-columns:1fr 3fr;
+  gap: 20px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.distance-display { 
+  height: fit-content;
+  margin-top: 8px;
+
+}
+
+.checkbox-and-icon > .icon {
+  height: 100%;
 }
