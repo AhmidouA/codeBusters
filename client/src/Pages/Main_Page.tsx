@@ -1,17 +1,34 @@
 // LIBRARIES
 import react, {useState} from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 // STYLE
 import '../Style/Main_Page.css';
 
-
 const Main_Page = () => {
-  const [MAP_CENTER, setMAP_CENTER] = useState<[number, number]>([43.62505, 3.862038]);
+  const [location, setLocation] = useState<[number, number]>([43.62505, 3.862038]);
+  if (navigator.geolocation) {
+    setInterval(() => {navigator.geolocation.getCurrentPosition(success, error);}, 5000);
+    
+  } else {
+    console.log("Geolocation not supported");
+  }
+  
+  function success(position:  GeolocationPosition) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    console.log('latitude :', latitude, 'longitude :', longitude)
+    setLocation(coord => [latitude, longitude]);
+    console.log("location", location)
+  }
+  
+  function error() {
+    console.log("Unable to retrieve your location");
+  }
 
   return (
     <>
     <MapContainer 
-      center={MAP_CENTER} 
+      center={location} 
       style={{ 
         position: "fixed", 
         top: 0, 
@@ -27,6 +44,11 @@ const Main_Page = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <Marker position={location}>
+        <Popup>
+          C'est vous.
+        </Popup>
+      </Marker>
     </MapContainer>
 
     <div className="Main-UI-Container">
