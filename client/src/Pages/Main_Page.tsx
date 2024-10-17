@@ -10,8 +10,6 @@ import '../Style/Main_Page.css';
 
 
 
-
-
 const Main_Page = () => {
   const [location, setLocation] = useState<[number, number]>([10, 2]);
 
@@ -76,9 +74,9 @@ const Main_Page = () => {
       <Recenter_Map location={location} />
     </MapContainer>
 
-    <div className="Main-UI-Container">
-      <p>Content Here</p>
-    </div>
+    <section>
+      <div className='UI-Element'>bonjour</div>
+    </section>
 
     </>
     

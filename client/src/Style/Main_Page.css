@@ -1,12 +1,6 @@
-.Main-UI-Container {
+.UI-Element {
   position: fixed;
-  z-index: 9999;;
+  z-index: 2;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
-  padding: 20%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
