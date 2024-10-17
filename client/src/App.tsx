@@ -2,7 +2,7 @@
 // LIBRARIES
 import react from 'react';
 // COMPONENTS
-import Main_Page from './Pages/Main_Page';
+import Main_Page from './Pages/MainPage';
 
 
 function App() {

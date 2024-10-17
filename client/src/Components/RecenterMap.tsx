@@ -6,7 +6,7 @@ import { useMap } from "react-leaflet";
  * @param param0 localisation
  * @returns 
  */
-const Recenter_Map = ({ location }: { location: [number, number] }) => {
+const RecenterMap = ({ location }: { location: [number, number] }) => {
     const map = useMap();
     useEffect(() => {
       map.setView(location, map.getZoom());
@@ -15,4 +15,4 @@ const Recenter_Map = ({ location }: { location: [number, number] }) => {
   };
 
 
-  export default Recenter_Map
+  export default RecenterMap
