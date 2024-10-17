@@ -1,10 +1,13 @@
+
+// LIBRARIES
+import react from 'react';
+// COMPONENTS
+import Main_Page from './Style/Main_Page';
+import 'leaflet/dist/leaflet.css'
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Projet Hackathon</h1>
-      </header>
-    </div>
+    <Main_Page />
   );
 }
 
