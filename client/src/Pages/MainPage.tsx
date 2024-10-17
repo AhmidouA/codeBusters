@@ -15,7 +15,7 @@ import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
 
 interface IParking {
-  address: string;
+  address?: string;
   city: string;
   created_at: string;
   id : number;
@@ -44,9 +44,12 @@ const MainPage = () => {
     horizontal: 'center',
 
   });
-  const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue")
   const { vertical, horizontal, open } = stateToaster;
+  const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue");
+  const [freeSlots, setFreeSlots] = useState<number>(0)
+  
 
+  /***** Variables pour les filtres *******/
   const [car, setCar] = useState<boolean>(false);
   const [prm, setPrm] = useState<boolean>(false);
   const [bike, setBike] = useState<boolean>(false);
@@ -55,7 +58,7 @@ const MainPage = () => {
 
   const [parkingsList, setParkingList]= useState<IParking[]>([]);
   
-  /*************** LeaFlet Config*/ 
+  /*************** Configuration LeaFlet  ****************/ 
   let DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
@@ -125,6 +128,12 @@ const MainPage = () => {
     }
     
   };
+
+  const handleClickMarker = (id: string) => {
+    fetch(`http://localhost:3001/api/station/${id}`)
+    .then(res => res.json())
+    .then(res => setFreeSlots(res.availableSlots))
+  }
   
   return (
     <>
@@ -153,7 +162,12 @@ const MainPage = () => {
       </Marker>
       {
         parkingsList.length > 0 && parkingsList.map((item, index)=>{
-          return <Marker position={[item.latitude, item.longitude]} key={index}><Popup>{item.name || 'Parking'}</Popup></Marker>
+          return <Marker 
+            position={[item.latitude, item.longitude]}
+            key={index}
+            eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}>
+              <Popup>{item.name || 'Parking'}</Popup>
+          </Marker>
         })
       }
       <RecenterMap location={mapCenter} />
