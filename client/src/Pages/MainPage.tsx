@@ -45,10 +45,11 @@ const MainPage = () => {
   const { vertical, horizontal, open } = stateToaster;
   const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue");
   const [freeSlots, setFreeSlots] = useState<number>(0)
-  const [typeStation, setTypeStation]= useState<string>('CAR');
+  const [typeStation, setTypeStation]= useState<boolean[]>([true, false]); //['CAR','BIKE']
   
 
   /***** Variables pour les filtres *******/
+  const [car, setCar] = useState<boolean>(true);
   const [pmr, setPmr] = useState<boolean>(false);
   const [bike, setBike] = useState<boolean>(false);
   const [distance, setDistance] = useState<number>(500);
@@ -130,8 +131,8 @@ const MainPage = () => {
   }, []);
 
   useEffect(()=>{
-    setTypeStation(bike ? 'BIKE': 'CAR')
-  }, [bike])
+    setTypeStation([car, bike])
+  }, [car, bike])
 
   const handleAddressSelect = (coords: [number, number]) => {
     setDestinationLocation(coords);
@@ -193,15 +194,30 @@ const MainPage = () => {
       
       {
         parkingsList.length > 0 && parkingsList.map((item, index)=>{
-          if(typeStation === item.station_type){
+          if(typeStation[0] && typeStation[1]){ // si les deux cases (bike et car ) son cocher, tout afficher
             return <Marker 
-              position={[item.latitude, item.longitude]}
-              key={index}
-              eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
-              icon={typeStation === 'CAR' ? parkingIcon : bikeIcon}>
-              <Popup>{typeStation === 'CAR' ? item.name : item.address}<br />
-              {`${freeSlots}/${item.total_spot} places libres`}</Popup>
-            </Marker>
+                position={[item.latitude, item.longitude]}
+                key={index}
+                eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
+                icon={item.station_type === 'CAR' ? parkingIcon : bikeIcon}>
+                <Popup>{item.station_type === 'CAR' ? item.name : item.address}<br />
+                {`${freeSlots}/${item.total_spot} places libres`}</Popup>
+              </Marker>
+          }else{         
+            let station  = "";
+            if(typeStation[0]) {station = 'CAR'}
+            if(typeStation[1]) {station = 'BIKE'}
+            if(station === item.station_type){ // sinon afficher que quand le type correspond
+              return <Marker 
+                position={[item.latitude, item.longitude]}
+                key={index}
+                eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
+                icon={station === 'CAR' ? parkingIcon : bikeIcon}>
+                <Popup>{station === 'CAR' ? item.name : item.address}<br />
+                {`${freeSlots}/${item.total_spot} places libres`}</Popup>
+              </Marker>
+            }
+           
           }      
         })
       }
@@ -210,7 +226,8 @@ const MainPage = () => {
     </MapContainer>
 
     <UIComponent 
-      car={!bike}
+      car={car}
+      setCar={setCar}
       prm={pmr}
       setPrm={setPmr}
       bike={bike}

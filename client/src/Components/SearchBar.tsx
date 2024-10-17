@@ -21,7 +21,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onAddressSelect }) => {
   const fetchSuggestions = async (input: string) => {
     if (input.length > 2) {
       const response = await fetch(
-        `https://api-adresse.data.gouv.fr/search/?q=${input}+Montpellier+France&limit=15`
+        `https://api-adresse.data.gouv.fr/search/?q=${input}+Montpellier+France&limit=8`
       );
       const data = await response.json();
       // console.log(data) // for display gouv api data
