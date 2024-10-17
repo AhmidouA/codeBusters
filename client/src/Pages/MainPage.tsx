@@ -22,7 +22,7 @@ const MainPage = () => {
   const [car, setCar] = useState<boolean>(false);
   const [prm, setPrm] = useState<boolean>(false);
   const [bike, setBike] = useState<boolean>(false);
-  const [distance, setDistance] = useState<number>(5);
+  const [distance, setDistance] = useState<number>(500);
 
 
   const [parkingsList, setParkingList]= useState<[{}]>([{}]);
@@ -70,9 +70,13 @@ const MainPage = () => {
     setDestinationLocation(coords);
     if(destinationLocation){
       setMapCenter(destinationLocation);
-      fetch(`http:localhost:3006/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
-         .then(res => res.json)
-         .then(res => console.log(res)) 
+      // const type = bike ? 'bikes' : 'cars';
+      fetch(`http://localhost:3001/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
+         .then(res => res.json())
+         .then(res => {
+          console.log(res)
+          setParkingList(res);
+        }) 
     }
     
   };
@@ -102,7 +106,6 @@ const MainPage = () => {
           C'est vous.
         </Popup>
       </Marker>
-
       <RecenterMap location={mapCenter} />
 
     </MapContainer>
