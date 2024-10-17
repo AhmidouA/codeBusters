@@ -1,16 +1,12 @@
 // LIBRARIES
 import react, {useEffect, useState} from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import Recenter_Map from '../Components/Recenter_Map';
 // STYLE
 import '../Style/Main_Page.css';
 
-const RecenterMap = ({ location }: { location: [number, number] }) => {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(location, map.getZoom());
-  }, [location, map]);
-  return null;
-};
+
+
 
 
 const Main_Page = () => {
@@ -68,7 +64,7 @@ const Main_Page = () => {
           C'est vous.
         </Popup>
       </Marker>
-      <RecenterMap location={location} />
+      <Recenter_Map location={location} />
     </MapContainer>
 
     <div className="Main-UI-Container">
