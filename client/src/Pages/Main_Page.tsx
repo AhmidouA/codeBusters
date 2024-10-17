@@ -1,29 +1,48 @@
 // LIBRARIES
-import react, {useState} from 'react';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import react, {useEffect, useState} from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 // STYLE
 import '../Style/Main_Page.css';
 
+const RecenterMap = ({ location }: { location: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(location, map.getZoom());
+  }, [location, map]);
+  return null;
+};
+
+
 const Main_Page = () => {
-  const [location, setLocation] = useState<[number, number]>([43.62505, 3.862038]);
-  if (navigator.geolocation) {
-    setInterval(() => {navigator.geolocation.getCurrentPosition(success, error);}, 5000);
-    
-  } else {
-    console.log("Geolocation not supported");
-  }
+  const [location, setLocation] = useState<[number, number]>([10, 2]);
   
   function success(position:  GeolocationPosition) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     console.log('latitude :', latitude, 'longitude :', longitude)
-    setLocation(coord => [latitude, longitude]);
-    console.log("location", location)
+    setLocation([latitude, longitude]);
   }
   
   function error() {
     console.log("Unable to retrieve your location");
   }
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      const updateLocation = () => {
+        navigator.geolocation.getCurrentPosition(success, error);
+      };
+
+      // Appelle la mise à jour immédiatement puis toutes les 5 secondes
+      updateLocation();
+      const intervalId = setInterval(updateLocation, 5000);
+
+      // Nettoyage de l'intervalle quand le composant est démonté
+      return () => clearInterval(intervalId);
+    } else {
+      console.log("Geolocation not supported");
+    }
+  }, []);
 
   return (
     <>
@@ -49,6 +68,7 @@ const Main_Page = () => {
           C'est vous.
         </Popup>
       </Marker>
+      <RecenterMap location={location} />
     </MapContainer>
 
     <div className="Main-UI-Container">
