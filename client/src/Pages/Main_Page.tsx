@@ -2,6 +2,9 @@
 import react, {useEffect, useState} from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import Recenter_Map from '../Components/Recenter_Map';
+import icon from "leaflet/dist/images/marker-icon.png";
+import L from "leaflet";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
 // STYLE
 import '../Style/Main_Page.css';
 
@@ -11,11 +14,17 @@ import '../Style/Main_Page.css';
 
 const Main_Page = () => {
   const [location, setLocation] = useState<[number, number]>([10, 2]);
+
+  let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+  });
+
+  L.Marker.prototype.options.icon = DefaultIcon;
   
   function success(position:  GeolocationPosition) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
-    console.log('latitude :', latitude, 'longitude :', longitude)
     setLocation([latitude, longitude]);
   }
   
