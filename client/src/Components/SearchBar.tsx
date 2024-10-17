@@ -20,14 +20,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ onAddressSelect }) => {
   const fetchSuggestions = async (input: string) => {
     if (input.length > 2) {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${input}+Montpellier+France&format=json&addressdetails=1&limit=5`
+        `https://api-adresse.data.gouv.fr/search/?q=${input}+Montpellier+France&limit=15`
       );
       const data = await response.json();
+      // console.log(data) // for display grouv api data
       setSuggestions(
-        data.map((item: any) => ({
-          displayName: item.display_name,
-          lat: item.lat, 
-          lon: item.lon,
+        data.features.map((item: any) => ({
+          displayName: item.properties.label,
+          lat: item.geometry.coordinates[0], 
+          lon: item.geometry.coordinates[1],
         }))
       );
     } else {

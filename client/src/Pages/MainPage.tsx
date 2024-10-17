@@ -18,7 +18,7 @@ const MainPage = () => {
   const [userLocation, setUserLocation]= useState<[number, number]>();
   const [destinationLocation, setDestinationLocation] = useState<[number,number]>();
   const [parkingsList, setParkingList]= useState<[{}]>([{}]);
-  const [ray, setRay]= useState(500)
+  const [radius, setRadius]= useState(500);
 
   let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -62,13 +62,9 @@ const MainPage = () => {
     setDestinationLocation(coords);
     if(destinationLocation){
       setMapCenter(destinationLocation);
-      fetch("http:localhost:3006/api/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ coord: destinationLocation, ray: ray} ),
-      })
+      fetch(`http:localhost:3006/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${radius}`)
+         .then(res => res.json)
+         .then(res => console.log(res)) 
     }
     
   };
