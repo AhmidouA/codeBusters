@@ -30,7 +30,7 @@ model Station {
   id_api       String      @unique
   station_type StationType
   name         String?
-  address      String
+  address      String?
   city         String?
   latitude     Float
   longitude    Float
