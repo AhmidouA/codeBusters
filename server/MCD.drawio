@@ -1,0 +1,28 @@
+<mxfile host="65bd71144e">
+    <diagram id="P4O0IJmVPTGDOjoPXiXE" name="Page-1">
+        <mxGraphModel dx="1598" dy="691" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="3" value="Urilisateur" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="290" y="280" width="200" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Prenom" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="1" y="84" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Email" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="4" y="114" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Mot de passe" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="-1" y="142" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Nom" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="3" y="57" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="&lt;u&gt;Code_utilisateur&lt;/u&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="3">
+                    <mxGeometry x="49" y="20" width="110" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
