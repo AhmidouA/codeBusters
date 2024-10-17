@@ -1,17 +1,49 @@
 // LIBRARIES
-import react, {useState} from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import react, {useEffect, useState} from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import Recenter_Map from '../Components/Recenter_Map';
 // STYLE
 import '../Style/Main_Page.css';
 
 
+
+
+
 const Main_Page = () => {
-  const [MAP_CENTER, setMAP_CENTER] = useState<[number, number]>([43.62505, 3.862038]);
+  const [location, setLocation] = useState<[number, number]>([10, 2]);
+  
+  function success(position:  GeolocationPosition) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    console.log('latitude :', latitude, 'longitude :', longitude)
+    setLocation([latitude, longitude]);
+  }
+  
+  function error() {
+    console.log("Unable to retrieve your location");
+  }
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      const updateLocation = () => {
+        navigator.geolocation.getCurrentPosition(success, error);
+      };
+
+      // Appelle la mise à jour immédiatement puis toutes les 5 secondes
+      updateLocation();
+      const intervalId = setInterval(updateLocation, 5000);
+
+      // Nettoyage de l'intervalle quand le composant est démonté
+      return () => clearInterval(intervalId);
+    } else {
+      console.log("Geolocation not supported");
+    }
+  }, []);
 
   return (
     <>
     <MapContainer 
-      center={MAP_CENTER} 
+      center={location} 
       style={{ 
         position: "fixed", 
         top: 0, 
@@ -27,6 +59,12 @@ const Main_Page = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <Marker position={location}>
+        <Popup>
+          C'est vous.
+        </Popup>
+      </Marker>
+      <Recenter_Map location={location} />
     </MapContainer>
 
     <div className="Main-UI-Container">
