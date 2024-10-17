@@ -2,7 +2,7 @@
 import react, {useEffect, useState} from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 // COMPONENTS
-import Recenter_Map from '../Components/Recenter_Map';
+import RecenterMap from '../Components/RecenterMap';
 import SearchBar from '../Components/SearchBar';
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
@@ -12,9 +12,13 @@ import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
 
 
-const Main_Page = () => {
+const MainPage = () => {
   
-  const [location, setLocation] = useState<[number, number]>([43.62505, 3.862038]);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([43.62505, 3.862038]);
+  const [userLocation, setUserLocation]= useState<[number, number]>();
+  const [destinationLocation, setDestinationLocation] = useState<[number,number]>();
+  const [parkingsList, setParkingList]= useState<[{}]>([{}]);
+  const [ray, setRay]= useState(500)
 
   let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -23,13 +27,13 @@ const Main_Page = () => {
 
   L.Marker.prototype.options.icon = DefaultIcon;
 
-  function success(position:  GeolocationPosition) {
+  const success = (position:  GeolocationPosition) => {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
-    setLocation([latitude, longitude]);
+    setUserLocation([latitude, longitude]);
   }
   
-  function error() {
+  const error = () => {
     console.log("Unable to retrieve your location");
   }
 
@@ -39,11 +43,15 @@ const Main_Page = () => {
         navigator.geolocation.getCurrentPosition(success, error);
       };
 
-      // Appelle la mise à jour immédiatement puis toutes les 5 secondes
+      // update location when mount
       updateLocation();
+      if(userLocation){
+        setMapCenter(userLocation);
+      }
+      
+      // update userLocation every seconds
       const intervalId = setInterval(updateLocation, 5000);
 
-      // Nettoyage de l'intervalle quand le composant est démonté
       return () => clearInterval(intervalId);
     } else {
       console.log("Geolocation not supported");
@@ -51,13 +59,24 @@ const Main_Page = () => {
   }, []);
 
   const handleAddressSelect = (coords: [number, number]) => {
-    setLocation(coords);
+    setDestinationLocation(coords);
+    if(destinationLocation){
+      setMapCenter(destinationLocation);
+      fetch("http:localhost:3006/api/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ coord: destinationLocation, ray: ray} ),
+      })
+    }
+    
   };
   
   return (
     <>
     <MapContainer 
-      center={location} 
+      center={mapCenter} 
       style={{ 
         position: "fixed", 
         top: 0, 
@@ -74,13 +93,13 @@ const Main_Page = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <Marker position={location}>
+      <Marker position={mapCenter}>
         <Popup>
           C'est vous.
         </Popup>
       </Marker>
 
-      <Recenter_Map location={location} />
+      <RecenterMap location={mapCenter} />
 
     </MapContainer>
 
@@ -95,4 +114,4 @@ const Main_Page = () => {
   );
 };
 
-export default Main_Page;
+export default MainPage;
