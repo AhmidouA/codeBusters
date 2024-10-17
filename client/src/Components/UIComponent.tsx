@@ -1,59 +1,42 @@
 // LIBRARIES
 import React, { useState } from 'react';
 import { TextField, Checkbox, FormControlLabel, Slider, Button, Box, Typography } from '@mui/material';
-
+// COMPONENT
+import SearchBar from './SearchBar';
 // STYLE
 import '../Style/UIComponent.css';
 
-const UIComponent = () => {
+const UIComponent = (props:any) => {
 
-  const [address, setAddress] = useState<string>('');
-  const [car, setCar] = useState<boolean>(false);
-  const [prm, setPrm] = useState<boolean>(false);
-  const [bike, setBike] = useState<boolean>(false);
-  const [distance, setDistance] = useState<number>(5);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = { address, car, bike, prm, distance };
-    console.log(formData);
-    // You can handle the form submission logic here (e.g., send data to an API)
-  };
 
   return (
-    <Box className='search-menu UI-Element' component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, margin: 'auto', padding: 2 }}>
+    <div className='search-menu UI-Element' >
 
-    <TextField
-      label="Address"
-      fullWidth
-      margin="normal"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-    />
+    <SearchBar onAddressSelect={props.handleAddressSelect}/>
 
     <FormControlLabel
-      control={<Checkbox checked={car} onChange={(e) => setCar(e.target.checked)} />}
+      control={<Checkbox checked={props.car} onChange={(e) => props.setCar(e.target.checked)} />}
       label="Car"
     />
     <FormControlLabel
-      control={<Checkbox checked={bike} onChange={(e) => setBike(e.target.checked)} />}
+      control={<Checkbox checked={props.bike} onChange={(e) => props.setBike(e.target.checked)} />}
       label="Bike"
     />
     <FormControlLabel
-      control={<Checkbox checked={prm} onChange={(e) => setPrm(e.target.checked)} />}
+      control={<Checkbox checked={props.prm} onChange={(e) => props.setPrm(e.target.checked)} />}
       label="PRM"
     />
   
-    <Typography gutterBottom>Distance: {distance} m</Typography>
+    <Typography gutterBottom>Distance: {props.distance} m</Typography>
       <Slider
-        value={distance}
-        onChange={(e, newValue) => setDistance(newValue as number)}
+        value={props.distance}
+        onChange={(e, newValue) => props.setDistance(newValue as number)}
         min={10}
         max={500}
         step={10}
         valueLabelDisplay="auto"
       />
-    </Box>
+    </div>
   );
 };
 

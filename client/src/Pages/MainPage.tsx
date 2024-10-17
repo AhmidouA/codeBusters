@@ -17,8 +17,16 @@ const MainPage = () => {
   const [mapCenter, setMapCenter] = useState<[number, number]>([43.62505, 3.862038]);
   const [userLocation, setUserLocation]= useState<[number, number]>();
   const [destinationLocation, setDestinationLocation] = useState<[number,number]>();
+  
+
+  const [car, setCar] = useState<boolean>(false);
+  const [prm, setPrm] = useState<boolean>(false);
+  const [bike, setBike] = useState<boolean>(false);
+  const [distance, setDistance] = useState<number>(5);
+
+
   const [parkingsList, setParkingList]= useState<[{}]>([{}]);
-  const [radius, setRadius]= useState(500);
+  
 
   let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -62,7 +70,7 @@ const MainPage = () => {
     setDestinationLocation(coords);
     if(destinationLocation){
       setMapCenter(destinationLocation);
-      fetch(`http:localhost:3006/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${radius}`)
+      fetch(`http:localhost:3006/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
          .then(res => res.json)
          .then(res => console.log(res)) 
     }
@@ -99,7 +107,17 @@ const MainPage = () => {
 
     </MapContainer>
 
-    <UIComponent/>
+    <UIComponent 
+      car={car}
+      setCar={setCar}
+      prm={prm}
+      setPrm={setPrm}
+      bike={bike}
+      setBike={setBike}
+      distance={distance}
+      setDistance={setDistance} 
+      handleAddressSelect={handleAddressSelect}
+    />
     
   </>);
 };

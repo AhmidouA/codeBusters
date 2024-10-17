@@ -27,8 +27,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onAddressSelect }) => {
       setSuggestions(
         data.features.map((item: any) => ({
           displayName: item.properties.label,
-          lat: item.geometry.coordinates[0], 
-          lon: item.geometry.coordinates[1],
+          lat: item.geometry.coordinates[1], 
+          lon: item.geometry.coordinates[0],
         }))
       );
     } else {
