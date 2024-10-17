@@ -44,59 +44,61 @@ export const getStations = async (req: Request, res: Response) => {
     }
 };
 
-export const getAvailableBikeSlot = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
+export const getAvailableSlot = async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-        if (!id) {
-            res.status(400).json({ message: "Missing id_api in query params" });
+    if (!id) {
+        res.status(400).json({ message: "Missing id in query params" });
+
+        return;
+    }
+
+    const fetchData = async (url: string, field: string) => {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                res.status(400).json({
+                    message: "Error fetching data from API",
+                });
+
+                return;
+            }
+
+            const data = await response.json();
+
+            if (!data || !data[0] || !data[0][field]) {
+                res.status(400).json({ message: "No available data" });
+
+                return;
+            }
+
+            res.status(200).json({ availableSlots: data[0][field].value });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+            });
         }
+    };
 
-        const now = new Date();
-        const fromDate = new Date(
-            new Date().getTime() - 10 * 60000 // 1 minute = 60,000 Milliseconds => - 10 minutes a l'heure actuelle
-        )
-            .toISOString()
-            .slice(0, -5); // Convertir l'heure actuelle en ISO (ex: AAAA-MM-JJTHH:MM:SS)
-        const toDate = now.toISOString().slice(0, -5); // Slice pour garder juste le HH:MM:SS
-
-        console.log("fromDate", fromDate);
-        console.log("toDate", toDate);
-
-        const apiUrl = `https://portail-api-data.montpellier3m.fr/bikestation_timeseries/${encodeURIComponent(
-            id
-        )}/attrs/availableBikeNumber?fromDate=${encodeURIComponent(
-            fromDate
-        )}&toDate=${encodeURIComponent(toDate)}`;
-
-        console.log("apiUrl", apiUrl);
-
-        const response = await fetch(apiUrl, {
-            method: "GET",
-            headers: {
-                accept: "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            res.status(400).json({ message: "Error fetching data from api" });
-        }
-
-        const data = await response.json();
-
-        if (!data || !Array.isArray(data.values) || data.values.length === 0)
-            res.status(400).json({ message: "No available bike data" });
-
-        // recupérer la derniere value du tableau
-        const availableSlots = data.values[data.values.length - 1];
-
-        res.status(200).json({ availableSlots });
-    } catch (error) {
-        console.error("Error getAvailableBikeSlot:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
+    if (id.includes("parking")) {
+        await fetchData(
+            `https://portail-api-data.montpellier3m.fr/offstreetparking?id=${encodeURIComponent(
+                id
+            )}`,
+            "availableSpotNumber"
+        );
+    } else if (id.includes("station")) {
+        await fetchData(
+            `https://portail-api-data.montpellier3m.fr/bikestation?id=${encodeURIComponent(
+                id
+            )}`,
+            "availableBikeNumber"
+        );
+    } else {
+        res.status(400).json({ message: "Invalid ID type" });
     }
 };
 
