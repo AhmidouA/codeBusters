@@ -12,7 +12,6 @@ const DEFAULT_RADIUS = 500;
 export const getStations = async (req: Request, res: Response) => {
     try {
         const { latitude, longitude, radius } = req.query;
-        console.log("req.params", req.query);
 
         // Utiliser le rayon par défaut si non fourni
         const searchRadius = radius
@@ -37,7 +36,63 @@ export const getStations = async (req: Request, res: Response) => {
             stations: nearbyStations,
         });
     } catch (error) {
-        console.error("Error user:", error);
+        console.error("Error getStations:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const getAvailableBikeSlot = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            res.status(400).json({ message: "Missing id_api in query params" });
+        }
+
+        const now = new Date();
+        const fromDate = new Date(
+            new Date().getTime() - 10 * 60000 // 1 minute = 60,000 Milliseconds => - 10 minutes a l'heure actuelle
+        )
+            .toISOString()
+            .slice(0, -5); // Convertir l'heure actuelle en ISO (ex: AAAA-MM-JJTHH:MM:SS)
+        const toDate = now.toISOString().slice(0, -5); // Slice pour garder juste le HH:MM:SS
+
+        console.log("fromDate", fromDate);
+        console.log("toDate", toDate);
+
+        const apiUrl = `https://portail-api-data.montpellier3m.fr/bikestation_timeseries/${encodeURIComponent(
+            id
+        )}/attrs/availableBikeNumber?fromDate=${encodeURIComponent(
+            fromDate
+        )}&toDate=${encodeURIComponent(toDate)}`;
+
+        console.log("apiUrl", apiUrl);
+
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+                accept: "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            res.status(400).json({ message: "Error fetching data from api" });
+        }
+
+        const data = await response.json();
+
+        if (!data || !Array.isArray(data.values) || data.values.length === 0)
+            res.status(400).json({ message: "No available bike data" });
+
+        // recupérer la derniere value du tableau
+        const availableSlots = data.values[data.values.length - 1];
+
+        res.status(200).json({ availableSlots });
+    } catch (error) {
+        console.error("Error getAvailableBikeSlot:", error);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
