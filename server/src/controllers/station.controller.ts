@@ -135,7 +135,7 @@ export const importCarStations = async (req: Request, res: Response) => {
         name: station.name.value,
         latitude: station.location.value.coordinates[1],
         longitude: station.location.value.coordinates[0],
-        total_spot: station.totalSlotNumber.value,
+        total_spot: station.totalSpotNumber.value,
     }));
 
     const createMany = await prisma.station.createMany({
