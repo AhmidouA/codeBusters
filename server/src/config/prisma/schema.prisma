@@ -27,14 +27,15 @@ model User {
 
 model Station {
   id           Int         @id @default(autoincrement())
+  id_api       String      @unique
   station_type StationType
-  name         String
+  name         String?
   address      String
   city         String?
   latitude     Float
   longitude    Float
   total_spot   Int
-  indoor       Boolean
+  indoor       Boolean?
 
   created_at DateTime   @default(now())
   updatat_at DateTime   @default(now())
