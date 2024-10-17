@@ -8,7 +8,6 @@ import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
 import Snackbar, { SnackbarOrigin} from '@mui/material/Snackbar';
-import { DirectionsBike } from '@mui/icons-material'
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';

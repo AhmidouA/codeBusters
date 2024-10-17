@@ -1,6 +1,5 @@
 // LIBRARIES
-import React, { useState } from 'react';
-import { Checkbox, Slider, Typography, SvgIcon } from '@mui/material';
+import { Checkbox, Slider } from '@mui/material';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import PedalBikeIcon from '@mui/icons-material/PedalBike';
@@ -23,7 +22,7 @@ const UIComponent = (props:any) => {
       </div>
 
       <div className='checkbox-and-icon'>
-        <Checkbox checked={props.car} onChange={(e) => props.setCar(e.target.checked)} disabled />
+        <Checkbox checked={props.car} onChange={(e) => props.setBike(e.target.checked)} disabled />
         <LocalParkingIcon className='icon' color='disabled' />
       </div>
 
