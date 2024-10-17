@@ -1,12 +1,12 @@
 // LIBRARIES
 import react, {useEffect, useState} from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
-// COMPONENTS
-import RecenterMap from '../Components/RecenterMap';
-import SearchBar from '../Components/SearchBar';
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+// COMPONENTS
+import UIComponent from '../Components/UIComponent';
+import RecenterMap from '../Components/RecenterMap';
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
@@ -103,15 +103,9 @@ const MainPage = () => {
 
     </MapContainer>
 
-    <section>
-      <div className='UI-Element'>
-      <SearchBar onAddressSelect={handleAddressSelect} />
-      </div>
-    </section>
-
-    </>
+    <UIComponent/>
     
-  );
+  </>);
 };
 
 export default MainPage;
