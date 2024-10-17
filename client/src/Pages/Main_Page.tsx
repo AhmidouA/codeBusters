@@ -1,19 +1,20 @@
 // LIBRARIES
 import react, {useEffect, useState} from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+// COMPONENTS
 import Recenter_Map from '../Components/Recenter_Map';
+import SearchBar from '../Components/SearchBar';
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 // STYLE
 import '../Style/Main_Page.css';
-
-
-
+import 'leaflet/dist/leaflet.css';
 
 
 const Main_Page = () => {
-  const [location, setLocation] = useState<[number, number]>([10, 2]);
+  
+  const [location, setLocation] = useState<[number, number]>([43.62505, 3.862038]);
 
   let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -21,7 +22,7 @@ const Main_Page = () => {
   });
 
   L.Marker.prototype.options.icon = DefaultIcon;
-  
+
   function success(position:  GeolocationPosition) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
@@ -49,6 +50,10 @@ const Main_Page = () => {
     }
   }, []);
 
+  const handleAddressSelect = (coords: [number, number]) => {
+    setLocation(coords);
+  };
+  
   return (
     <>
     <MapContainer 
@@ -68,17 +73,22 @@ const Main_Page = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+
       <Marker position={location}>
         <Popup>
           C'est vous.
         </Popup>
       </Marker>
+
       <Recenter_Map location={location} />
+
     </MapContainer>
 
-    <div className="Main-UI-Container">
-      <p>Content Here</p>
-    </div>
+    <section>
+      <div className='UI-Element'>
+      <SearchBar onAddressSelect={handleAddressSelect} />
+      </div>
+    </section>
 
     </>
     
