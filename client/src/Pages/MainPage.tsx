@@ -7,10 +7,11 @@ import iconShadow from "leaflet/dist/images/marker-shadow.png";
 // COMPONENTS
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
-import Snackbar, { SnackbarOrigin} from '@mui/material/Snackbar';
+import Snackbar, {SnackbarOrigin} from '@mui/material/Snackbar';
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
+
 
 interface IParking {
   address?: string;
@@ -74,7 +75,15 @@ const MainPage = () => {
   })
 
   const finishIcon = new Icon ({
-    iconUrl : '/finish.svg',
+    iconUrl : '/goal.svg',
+    iconSize : [35,35],
+    iconAnchor : [22,94],
+    popupAnchor : [-3, -76]
+
+  })
+
+  const userIcon = new Icon ({
+    iconUrl : '/user.svg',
     iconSize : [35,35],
     iconAnchor : [22,94],
     popupAnchor : [-3, -76]
@@ -180,7 +189,7 @@ const MainPage = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       { userLocation &&
-        <Marker position={userLocation}>
+        <Marker position={userLocation} icon={userIcon}>
           <Popup>C'est vous</Popup>
         </Marker>
       }
