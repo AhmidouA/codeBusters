@@ -9,16 +9,45 @@ import SearchBar from './SearchBar';
 // STYLE
 import '../Style/UIComponent.css';
 
-const UIComponent = (props:any) => {
+interface UIComponentProps {
+  car: boolean;
+  setCar: (value: boolean) => void;
+  prm: boolean;
+  setPrm: (value: boolean) => void;
+  bike: boolean;
+  setBike: (value: boolean) => void;
+  distance: number;
+  setDistance: (value: number) => void;
+  handleAddressSelect: (coords: [number, number]) => void;
+  userLocation: [number, number] | undefined;
+}
+
+
+const UIComponent: React.FC<UIComponentProps> = ({
+  car,
+  setCar,
+  prm,
+  setPrm,
+  bike,
+  setBike,
+  distance,
+  setDistance,
+  handleAddressSelect,
+  userLocation,
+}) => {
 
   return (
     <div className='search-menu UI-Element' >
 
     <div className='searchbar-and-location-button'>
-    <SearchBar onAddressSelect={props.handleAddressSelect}/>
+    <SearchBar onAddressSelect={handleAddressSelect}/>
       <IconButton 
         sx={{border:'solid 1px gray', color:'black', borderRadius:'5px'}}
-        onClick={()=>{props.handleAddressSelect(props.userLocation)}}
+        onClick={() => {
+          if (userLocation) {
+            handleAddressSelect(userLocation);
+          }
+        }}
       >
         <MyLocationIcon/>
       </IconButton>
@@ -27,26 +56,26 @@ const UIComponent = (props:any) => {
 
     <div className='filters-row'>
       <div className='checkbox-and-icon'>
-        <Checkbox checked={props.bike} onChange={(e) => props.setBike(e.target.checked)} />
+        <Checkbox checked={bike} onChange={(e) => setBike(e.target.checked)} />
         <PedalBikeIcon className='icon' />
       </div>
 
       <div className='checkbox-and-icon'>
-        <Checkbox checked={props.car} onChange={(e) => props.setCar(e.target.checked)} />
+        <Checkbox checked={car} onChange={(e) => setCar(e.target.checked)} />
         <LocalParkingIcon className='icon' />
       </div>
 
       <div className='checkbox-and-icon'>
-        <Checkbox checked={props.prm} onChange={(e) => props.setPrm(e.target.checked)} disabled />
+        <Checkbox checked={prm} onChange={(e) => setPrm(e.target.checked)} disabled />
         <AccessibleIcon className='icon' color='disabled' />
       </div>
     </div>
 
     <div className='distance-slider'>
-      <span className='distance-display'>{props.distance} m</span>
+      <span className='distance-display'>{distance} m</span>
       <Slider
-        value={props.distance}
-        onChange={(e, newValue) => props.setDistance(newValue as number)}
+        value={distance}
+        onChange={(e, newValue) => setDistance(newValue as number)}
         min={10}
         max={2000}
         step={10}
