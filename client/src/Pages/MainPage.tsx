@@ -87,20 +87,23 @@ const MainPage = () => {
         navigator.geolocation.getCurrentPosition(successGeoLocation, errorGeoLocation);
       };
 
-      // update location when mount
+      // récupération de la localisation au montage
       updateLocation();
-      if(userLocation){
-        setMapCenter(userLocation);
-      }
       
-      // update userLocation every seconds
-      const intervalId = setInterval(updateLocation, 5000);
-
-      return () => clearInterval(intervalId);
+      
+      // mettre à jour la géolocalisation toute les 5s - désactiver pour le moment car non utiliser 
+      // const intervalId = setInterval(updateLocation, 5000);
+      // return () => clearInterval(intervalId);
     } else {
       console.log("Geolocation not supported");
     }
   }, []);
+
+  useEffect(()=>{
+    if(userLocation){
+      setMapCenter(userLocation);
+    }
+  },[userLocation])
 
   // mise a jour du type de station en fonction des useStates car et bike
   useEffect(()=>{
