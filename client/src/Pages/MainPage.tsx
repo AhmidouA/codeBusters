@@ -71,7 +71,6 @@ const MainPage = () => {
     iconSize : [40,40],
     iconAnchor : [20,20], // point de l'icône qui correspondra à l'emplacement du marqueur
     popupAnchor : [0, -20] // point à partir duquel la fenêtre popup doit s'ouvrir par rapport à l'iconAnchor
-
   })
 
   const finishIcon = new Icon ({
