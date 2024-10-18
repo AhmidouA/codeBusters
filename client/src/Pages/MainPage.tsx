@@ -102,6 +102,7 @@ const MainPage = () => {
   useEffect(()=>{
     if(userLocation){
       setMapCenter(userLocation);
+      handleAddressSelect(userLocation);
     }
   },[userLocation])
 
