@@ -215,7 +215,7 @@ const MainPage = () => {
                 key={index}
                 eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
                 icon={item.station_type === 'CAR' ? parkingIcon : bikeIcon}>
-                <Popup>{item.station_type === 'CAR' ? item.name : item.address}<br />
+                <Popup><b>{item.station_type === 'CAR' ? item.name : item.address}</b><br />
                 {`${freeSlots}/${item.total_spot} places libres`}</Popup>
               </Marker>
           }else{         
@@ -228,7 +228,7 @@ const MainPage = () => {
                 key={index}
                 eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
                 icon={station === 'CAR' ? parkingIcon : bikeIcon}>
-                <Popup>{station === 'CAR' ? item.name : item.address}<br />
+                <Popup><b>{station === 'CAR' ? item.name : item.address}</b><br />
                 {`${freeSlots || "?"}/${item.total_spot} places libres`}</Popup>
               </Marker>
             }
