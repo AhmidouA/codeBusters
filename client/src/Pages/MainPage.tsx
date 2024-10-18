@@ -229,7 +229,7 @@ const MainPage = () => {
                 eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
                 icon={station === 'CAR' ? parkingIcon : bikeIcon}>
                 <Popup>{station === 'CAR' ? item.name : item.address}<br />
-                {`${freeSlots}/${item.total_spot} places libres`}</Popup>
+                {`${freeSlots || "?"}/${item.total_spot} places libres`}</Popup>
               </Marker>
             }
            
