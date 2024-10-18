@@ -44,40 +44,54 @@ export const getStations = async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Récupère les places disponibles pour une station ou un parking spécifique.
+ * 
+ * @param req - The HTTP request object.
+ * @param res - The HTTP response object.
+ */
 export const getAvailableSlot = async (req: Request, res: Response) => {
     const { id } = req.params;
 
+    // Check si l'id est fourni
     if (!id) {
         res.status(400).json({ message: "Missing id in query params" });
-
         return;
     }
 
+    /**
+     * Fetch la data d'un URL et retourne la valeur de champ.
+     * 
+     * @param url - The URL to fetch data from.
+     * @param field - The field to extract from the fetched data.
+     */
     const fetchData = async (url: string, field: string) => {
         try {
             const response = await fetch(url);
 
+            // Check si la reponse est ok
             if (!response.ok) {
                 console.error("Error fetching data:", response.statusText);
+                
+                // Check si l'erreur est due au rate limit
                 if (response.status === 429) {
                     res.status(429).json({
                         message: "Too many requests, please try again later",
                     });
-
                     return;
                 }
+
                 res.status(400).json({
                     message: "Error fetching data from API",
                 });
-
                 return;
             }
 
             const data = await response.json();
 
+            // Check si la data est valide et contient le champ
             if (!data || !data[0] || !data[0][field]) {
                 res.status(400).json({ message: "No available data" });
-
                 return;
             }
 
@@ -91,18 +105,15 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
         }
     };
 
+    // Fetch la data d'un parking ou d'une station selon l'id
     if (id.includes("parking")) {
         await fetchData(
-            `https://portail-api-data.montpellier3m.fr/offstreetparking?id=${encodeURIComponent(
-                id
-            )}`,
+            `https://portail-api-data.montpellier3m.fr/offstreetparking?id=${encodeURIComponent(id)}`,
             "availableSpotNumber"
         );
     } else if (id.includes("station")) {
         await fetchData(
-            `https://portail-api-data.montpellier3m.fr/bikestation?id=${encodeURIComponent(
-                id
-            )}`,
+            `https://portail-api-data.montpellier3m.fr/bikestation?id=${encodeURIComponent(id)}`,
             "availableBikeNumber"
         );
     } else {
@@ -110,6 +121,12 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Fetch les stations de vélo à partir du lien fourni et les importe dans la base de données.
+ * 
+ * @param req - The HTTP request object.
+ * @param res - The HTTP response object.
+ */
 export const importBikeStations = async (req: Request, res: Response) => {
     const { fetchURL } = req.body;
 
@@ -142,6 +159,7 @@ export const importBikeStations = async (req: Request, res: Response) => {
         return;
     }
 
+    // Map la data au format désiré
     const stations = data.map((station: any) => ({
         id_api: station.id,
         station_type: "BIKE",
@@ -152,48 +170,64 @@ export const importBikeStations = async (req: Request, res: Response) => {
         total_spot: station.totalSlotNumber.value,
     }));
 
+    // Créé les stations dans la base de données
     const createMany = await prisma.station.createMany({
         data: stations as any,
         skipDuplicates: true,
     });
 
+    // Log la creation des stations
     res.status(200).json({ message: "Data fetched successfully", createMany });
 };
 
+/**
+ * Fetch les parkings de voitures à partir du lien fourni et les importe dans la base de données.
+ * 
+ * @param req - The HTTP request object.
+ * @param res - The HTTP response object.
+ */
 export const importCarStations = async (req: Request, res: Response) => {
     const { fetchURL } = req.body;
 
+    // Check si l'URL est manquante
     if (!fetchURL && !process.env.CAR_PARK_URL) {
         res.status(400).json({ message: "Missing fetchURL" });
         return;
     }
 
+    // Fetch la data depuis l'URL
     const response = await fetch(fetchURL || process.env.CAR_PARK_URL);
 
     if (!response.ok) {
-        console.log(response);
+        // Log l'erreur
+        console.error(response);
 
         res.status(500).json({ message: "Error fetching data" });
         return;
     }
 
+    // Parse la réponse au format JSON
     const data = await response.json();
 
+    // Check si la data est valide
     if (!data) {
         res.status(500).json({ message: "Error parsing data" });
         return;
     }
 
+    // Check si la data est un tableau
     if (!Array.isArray(data)) {
         res.status(500).json({ message: "Data is not an array" });
         return;
     }
 
+    // Check si le tableau de data est vide
     if (data.length === 0) {
         res.status(500).json({ message: "Data is empty" });
         return;
     }
 
+    // Map la data au format spéciré
     const stations = data.map((station: any) => ({
         id_api: station.id,
         station_type: "CAR",
@@ -203,10 +237,12 @@ export const importCarStations = async (req: Request, res: Response) => {
         total_spot: station.totalSpotNumber.value,
     }));
 
+    // Créé les stations dans la base de données
     const createMany = await prisma.station.createMany({
         data: stations as any,
         skipDuplicates: true,
     });
 
+    // Log la creation des stations
     res.status(200).json({ message: "Data fetched successfully", createMany });
 };
