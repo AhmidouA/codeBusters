@@ -1,16 +1,15 @@
 // LIBRARIES
 import {useEffect, useState} from 'react';
-import { MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
-import icon from "leaflet/dist/images/marker-icon.png";
-import L, { Icon } from "leaflet";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { Circle, MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
 // COMPONENTS
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
 import Snackbar, {SnackbarOrigin} from '@mui/material/Snackbar';
+
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
+import { userIcon, finishIcon, parkingIcon, bikeIcon } from '../leaflet/customConfig';
 
 
 interface IParking {
@@ -37,17 +36,10 @@ const MainPage = () => {
   const [mapCenter, setMapCenter] = useState<[number, number]>([43.62505, 3.862038]);
   const [userLocation, setUserLocation]= useState<[number, number]>();
   const [destinationLocation, setDestinationLocation] = useState<[number,number]>();
-  const [stateToaster, setStateToaster] = useState<StateToaster>({
-    open: false,
-    vertical: 'top',
-    horizontal: 'center',
-
-  });
-  const { vertical, horizontal, open } = stateToaster;
-  const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue");
+ 
   const [freeSlots, setFreeSlots] = useState<number>(0)
   const [typeStation, setTypeStation]= useState<boolean[]>([true, false]); //['CAR','BIKE']
-  
+  const [parkingsList, setParkingList]= useState<IParking[]>([]);
 
   /***** Variables pour les filtres *******/
   const [car, setCar] = useState<boolean>(true);
@@ -56,47 +48,18 @@ const MainPage = () => {
   const [distance, setDistance] = useState<number>(500);
 
 
-  const [parkingsList, setParkingList]= useState<IParking[]>([]);
   
-  /*************** Configuration LeaFlet  ****************/ 
-  let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
+  
+  /******* Gestion du toaster ***********/
+  const [stateToaster, setStateToaster] = useState<StateToaster>({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+
   });
+  const { vertical, horizontal, open } = stateToaster;
+  const [toastMessage, setToastMessage] = useState<string>("Une erreur est survenue");
 
-  L.Marker.prototype.options.icon = DefaultIcon;
-
-  const bikeIcon = new Icon ({
-    iconUrl : '/bike.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20], // point de l'icône qui correspondra à l'emplacement du marqueur
-    popupAnchor : [0, -20] // point à partir duquel la fenêtre popup doit s'ouvrir par rapport à l'iconAnchor
-  })
-
-  const finishIcon = new Icon ({
-    iconUrl : '/goal.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20],
-    popupAnchor : [0, -20]
-
-  })
-
-  const userIcon = new Icon ({
-    iconUrl : '/user.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20],
-    popupAnchor : [0, -20]
-
-  })
-
-  const parkingIcon = new Icon ({
-    iconUrl : '/parking.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20],
-    popupAnchor : [0, -20]
-
-  })
-    /*****************************/
 
   const handleClickToast = (newState: SnackbarOrigin) => () => {
     setStateToaster({ ...newState, open: true });
@@ -106,42 +69,53 @@ const MainPage = () => {
     setStateToaster({ ...stateToaster, open: false });
   };
   
-
-  const success = (position:  GeolocationPosition) => {
+  /************ principal ************/
+  const successGeoLocation = (position:  GeolocationPosition) => {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     setUserLocation([latitude, longitude]);
   }
   
-  const error = () => {
+  const errorGeoLocation = () => {
     console.log("Unable to retrieve your location");
   }
 
+  // gestion de la localisation au lancement de la page
   useEffect(() => {
     if (navigator.geolocation) {
       const updateLocation = () => {
-        navigator.geolocation.getCurrentPosition(success, error);
+        navigator.geolocation.getCurrentPosition(successGeoLocation, errorGeoLocation);
       };
 
-      // update location when mount
+      // récupération de la localisation au montage
       updateLocation();
-      if(userLocation){
-        setMapCenter(userLocation);
-      }
       
-      // update userLocation every seconds
-      const intervalId = setInterval(updateLocation, 5000);
-
-      return () => clearInterval(intervalId);
+      
+      // mettre à jour la géolocalisation toute les 5s - désactiver pour le moment car non utiliser 
+      // const intervalId = setInterval(updateLocation, 5000);
+      // return () => clearInterval(intervalId);
     } else {
       console.log("Geolocation not supported");
     }
   }, []);
 
   useEffect(()=>{
+    if(userLocation){
+      setMapCenter(userLocation);
+      handleAddressSelect(userLocation);
+    }
+  },[userLocation])
+
+  // mise a jour du type de station en fonction des useStates car et bike
+  useEffect(()=>{
     setTypeStation([car, bike])
   }, [car, bike])
 
+  /**
+   * Fonction qui permet de récupérer la liste des parkings (velo ou voiture) dans le rayon des coordonnées fournies en paramètres
+   * Elle met a jour la destination et le centrage de la carte.
+   * @param coords latitude et longitude de l'adresse sélectionnée
+   */
   const handleAddressSelect = (coords: [number, number]) => {
     if (coords != mapCenter) {
       setDestinationLocation(coords === userLocation ? destinationLocation : coords)
@@ -165,10 +139,16 @@ const MainPage = () => {
     
   };
 
+  // re-rendre le composant quand la distance (radius) change
   useEffect(()=>{
     handleAddressSelect(mapCenter);
   }, [distance])
 
+  /**
+   * fonction qui se déclenche quand on clique sur un marqueur
+   * Elle effectue une requete vers l'api back pour récupérer les places libres en temps réel
+   * @param id 
+   */
   const handleClickMarker = (id: string) => {
     fetch(`http://localhost:3001/api/station/${id}`)
     .then(res => res.json())
@@ -190,6 +170,7 @@ const MainPage = () => {
       zoom={15} 
       scrollWheelZoom={true}
     >
+      <Circle center={mapCenter} radius={distance} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -208,34 +189,47 @@ const MainPage = () => {
       }
       
       {
-        parkingsList?.length > 0 && parkingsList.map((item, index)=>{
-          if(typeStation[0] && typeStation[1]){ // si les deux cases (bike et car ) son cocher, tout afficher
-            return <Marker 
+        parkingsList?.length > 0 && parkingsList.map((item, index) => {
+          const isCarStation = item.station_type === 'CAR';
+          const icon = isCarStation ? parkingIcon : bikeIcon;
+          const displayText = isCarStation ? item.name : item.address;
+          // Si les deux cases (bike et car) sont cochées, tout afficher
+          if (typeStation[0] && typeStation[1]) {
+            return (
+              <Marker
                 position={[item.latitude, item.longitude]}
                 key={index}
-                eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
-                icon={item.station_type === 'CAR' ? parkingIcon : bikeIcon}>
-                <Popup>{item.station_type === 'CAR' ? item.name : item.address}<br />
-                {`${freeSlots}/${item.total_spot} places libres`}</Popup>
+                eventHandlers={{ click: () => handleClickMarker(item.id_api) }}
+                icon={icon}
+              >
+                <Popup>
+                  <b>{displayText}</b><br />
+                  {`${freeSlots || "?"}/${item.total_spot} places libres`}
+                </Popup>
               </Marker>
-          }else{         
-            let station  = "";
-            if(typeStation[0]) {station = 'CAR'}
-            if(typeStation[1]) {station = 'BIKE'}
-            if(station === item.station_type){ // sinon afficher que quand le type correspond
-              return <Marker 
+            );
+          }
+
+          // Sinon, afficher uniquement quand le type correspond
+          const stationTypeToShow = typeStation[0] ? 'CAR' : (typeStation[1] ? 'BIKE' : '');
+          if (stationTypeToShow === item.station_type) {
+            return (
+              <Marker
                 position={[item.latitude, item.longitude]}
                 key={index}
-                eventHandlers={{ click: ()=>{handleClickMarker(item.id_api)}}}
-                icon={station === 'CAR' ? parkingIcon : bikeIcon}>
-                <Popup>{station === 'CAR' ? item.name : item.address}<br />
-                {`${freeSlots || "?"}/${item.total_spot} places libres`}</Popup>
+                eventHandlers={{ click: () => handleClickMarker(item.id_api) }}
+                icon={icon}
+              >
+                <Popup>
+                  <b>{displayText}</b><br />
+                  {`${freeSlots || "?"}/${item.total_spot} places libres`}
+                </Popup>
               </Marker>
-            }
-           
-          }      
+            );
+          }
+          return null; // Ne rien rendre si aucune condition n'est remplie
         })
-      }
+}
       <RecenterMap location={mapCenter} />
 
     </MapContainer>
