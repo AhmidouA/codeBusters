@@ -8,9 +8,11 @@ import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
 import Snackbar, {SnackbarOrigin} from '@mui/material/Snackbar';
+
 // STYLE
 import '../Style/Main_Page.css';
 import 'leaflet/dist/leaflet.css';
+import { userIcon, finishIcon, parkingIcon, bikeIcon } from '../leaflet/customConfig';
 
 
 interface IParking {
@@ -58,44 +60,7 @@ const MainPage = () => {
 
   const [parkingsList, setParkingList]= useState<IParking[]>([]);
   
-  /*************** Configuration LeaFlet  ****************/ 
-  let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-  });
 
-  L.Marker.prototype.options.icon = DefaultIcon;
-
-  const bikeIcon = new Icon ({
-    iconUrl : '/bike.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20], // point de l'icône qui correspondra à l'emplacement du marqueur
-    popupAnchor : [0, -20] // point à partir duquel la fenêtre popup doit s'ouvrir par rapport à l'iconAnchor
-  })
-
-  const finishIcon = new Icon ({
-    iconUrl : '/goal.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20],
-    popupAnchor : [0, -20]
-
-  })
-
-  const userIcon = new Icon ({
-    iconUrl : '/user.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20],
-    popupAnchor : [0, -20]
-
-  })
-
-  const parkingIcon = new Icon ({
-    iconUrl : '/parking.svg',
-    iconSize : [40,40],
-    iconAnchor : [20,20],
-    popupAnchor : [0, -20]
-
-  })
     /*****************************/
 
   const handleClickToast = (newState: SnackbarOrigin) => () => {
