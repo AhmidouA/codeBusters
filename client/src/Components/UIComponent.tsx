@@ -65,7 +65,7 @@ const UIComponent: React.FC<UIComponentProps> = ({
         <LocalParkingIcon className='icon' />
       </div>
 
-      <div className='checkbox-and-icon'>
+      <div className='checkbox-and-icon' title='prochainement'>
         <Checkbox checked={prm} onChange={(e) => setPrm(e.target.checked)} disabled />
         <AccessibleIcon className='icon' color='disabled' />
       </div>
