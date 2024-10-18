@@ -206,7 +206,7 @@ const MainPage = () => {
       }
       
       {
-        parkingsList.length > 0 && parkingsList.map((item, index)=>{
+        parkingsList?.length > 0 && parkingsList.map((item, index)=>{
           if(typeStation[0] && typeStation[1]){ // si les deux cases (bike et car ) son cocher, tout afficher
             return <Marker 
                 position={[item.latitude, item.longitude]}
