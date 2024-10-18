@@ -68,7 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onAddressSelect }) => {
       getSuggestionValue={(suggestion) => suggestion.displayName}
       renderSuggestion={renderSuggestion}
       inputProps={{
-        placeholder: 'Search for an address...',
+        placeholder: 'Entrez votre destination',
         value: value,
         onChange: (_, { newValue }) => setValue(newValue),
       }}
