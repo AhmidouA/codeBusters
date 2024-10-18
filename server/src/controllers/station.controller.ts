@@ -58,6 +58,14 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
             const response = await fetch(url);
 
             if (!response.ok) {
+                console.error("Error fetching data:", response.statusText);
+                if (response.status === 429) {
+                    res.status(429).json({
+                        message: "Too many requests, please try again later",
+                    });
+
+                    return;
+                }
                 res.status(400).json({
                     message: "Error fetching data from API",
                 });

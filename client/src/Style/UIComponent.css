@@ -42,3 +42,10 @@
 .checkbox-and-icon > .icon {
   height: 100%;
 }
+
+.searchbar-and-location-button {
+  padding: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+}

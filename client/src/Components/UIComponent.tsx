@@ -1,9 +1,9 @@
 // LIBRARIES
-import React, { useState } from 'react';
-import { Checkbox, Slider, Typography, SvgIcon } from '@mui/material';
+import { Checkbox, Slider, IconButton} from '@mui/material';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import PedalBikeIcon from '@mui/icons-material/PedalBike';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 // COMPONENT
 import SearchBar from './SearchBar';
 // STYLE
@@ -14,7 +14,16 @@ const UIComponent = (props:any) => {
   return (
     <div className='search-menu UI-Element' >
 
+    <div className='searchbar-and-location-button'>
     <SearchBar onAddressSelect={props.handleAddressSelect}/>
+      <IconButton 
+        sx={{border:'solid 1px gray', color:'black', borderRadius:'5px'}}
+        onClick={()=>{props.handleAddressSelect(props.userLocation)}}
+      >
+        <MyLocationIcon/>
+      </IconButton>
+    </div>
+    
 
     <div className='filters-row'>
       <div className='checkbox-and-icon'>
@@ -23,8 +32,8 @@ const UIComponent = (props:any) => {
       </div>
 
       <div className='checkbox-and-icon'>
-        <Checkbox checked={props.car} onChange={(e) => props.setCar(e.target.checked)} disabled />
-        <LocalParkingIcon className='icon' color='disabled' />
+        <Checkbox checked={props.car} onChange={(e) => props.setCar(e.target.checked)} />
+        <LocalParkingIcon className='icon' />
       </div>
 
       <div className='checkbox-and-icon'>
@@ -39,7 +48,7 @@ const UIComponent = (props:any) => {
         value={props.distance}
         onChange={(e, newValue) => props.setDistance(newValue as number)}
         min={10}
-        max={500}
+        max={2000}
         step={10}
         valueLabelDisplay="auto"
       />
