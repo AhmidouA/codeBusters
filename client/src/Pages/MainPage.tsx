@@ -68,33 +68,33 @@ const MainPage = () => {
 
   const bikeIcon = new Icon ({
     iconUrl : '/bike.svg',
-    iconSize : [30,30],
-    iconAnchor : [15,15], // point de l'icône qui correspondra à l'emplacement du marqueur
-    popupAnchor : [0, -15] // point à partir duquel la fenêtre popup doit s'ouvrir par rapport à l'iconAnchor
+    iconSize : [40,40],
+    iconAnchor : [20,20], // point de l'icône qui correspondra à l'emplacement du marqueur
+    popupAnchor : [0, -20] // point à partir duquel la fenêtre popup doit s'ouvrir par rapport à l'iconAnchor
 
   })
 
   const finishIcon = new Icon ({
     iconUrl : '/goal.svg',
-    iconSize : [30,30],
-    iconAnchor : [15,15],
-    popupAnchor : [0, -15]
+    iconSize : [40,40],
+    iconAnchor : [20,20],
+    popupAnchor : [0, -20]
 
   })
 
   const userIcon = new Icon ({
     iconUrl : '/user.svg',
-    iconSize : [30,30],
-    iconAnchor : [15,15],
-    popupAnchor : [0, -15]
+    iconSize : [40,40],
+    iconAnchor : [20,20],
+    popupAnchor : [0, -20]
 
   })
 
   const parkingIcon = new Icon ({
     iconUrl : '/parking.svg',
-    iconSize : [30,30],
-    iconAnchor : [15,15],
-    popupAnchor : [0, -15]
+    iconSize : [40,40],
+    iconAnchor : [20,20],
+    popupAnchor : [0, -20]
 
   })
     /*****************************/
