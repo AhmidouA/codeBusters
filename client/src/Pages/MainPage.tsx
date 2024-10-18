@@ -144,7 +144,10 @@ const MainPage = () => {
   }, [car, bike])
 
   const handleAddressSelect = (coords: [number, number]) => {
-    setDestinationLocation(coords === userLocation ? destinationLocation : coords)
+    if (coords != mapCenter) {
+      setDestinationLocation(coords === userLocation ? destinationLocation : coords)
+    }
+    
     if(coords != undefined){
       setMapCenter(coords);
       
