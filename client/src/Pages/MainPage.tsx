@@ -144,9 +144,9 @@ const MainPage = () => {
   }, [car, bike])
 
   const handleAddressSelect = (coords: [number, number]) => {
-    setDestinationLocation(coords);
-    if(destinationLocation){
-      setMapCenter(destinationLocation);
+    setDestinationLocation(coords === userLocation ? destinationLocation : coords)
+    if(destinationLocation || coords === userLocation){
+      setMapCenter(coords);
       
       fetch(`http://localhost:3001/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
          .then(res => res.json())
@@ -244,6 +244,7 @@ const MainPage = () => {
       distance={distance}
       setDistance={setDistance} 
       handleAddressSelect={handleAddressSelect}
+      userLocation={userLocation}
     />
     <Snackbar
         anchorOrigin={{ vertical, horizontal }}
