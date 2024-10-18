@@ -58,7 +58,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onAddressSelect }) => {
     if (selectedCoords) {
       onAddressSelect(selectedCoords);
     }
-  }, [selectedCoords, onAddressSelect]);
+  }, [selectedCoords]);
 
   return (
     <Autosuggest

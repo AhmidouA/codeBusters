@@ -48,7 +48,7 @@ const UIComponent = (props:any) => {
         value={props.distance}
         onChange={(e, newValue) => props.setDistance(newValue as number)}
         min={10}
-        max={500}
+        max={2000}
         step={10}
         valueLabelDisplay="auto"
       />

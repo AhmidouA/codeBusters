@@ -163,6 +163,10 @@ const MainPage = () => {
     
   };
 
+  useEffect(()=>{
+    handleAddressSelect(mapCenter);
+  }, [distance])
+
   const handleClickMarker = (id: string) => {
     fetch(`http://localhost:3001/api/station/${id}`)
     .then(res => res.json())
