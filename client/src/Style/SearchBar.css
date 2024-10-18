@@ -1,11 +1,8 @@
-.react-autosuggest__container {
-  position: relative;
-}
 
 .react-autosuggest__input {
-  width: 240px;
+  width: 200px;
   height: 30px;
-  padding: 10px 20px;
+  padding: 5px 10px;
   font-family: Helvetica, sans-serif;
   font-weight: 300;
   font-size: 16px;
@@ -30,7 +27,7 @@
   display: block;
   position: absolute;
   top: 51px;
-  width: 280px;
+  width: 220px;
   border: 1px solid #aaa;
   background-color: #fff;
   font-family: Helvetica, sans-serif;

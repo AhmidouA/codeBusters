@@ -12,7 +12,6 @@ const DEFAULT_RADIUS = 500;
 export const getStations = async (req: Request, res: Response) => {
     try {
         const { latitude, longitude, radius } = req.query;
-        console.log("req.params", req.query);
 
         // Utiliser le rayon par défaut si non fourni
         const searchRadius = radius
@@ -37,11 +36,77 @@ export const getStations = async (req: Request, res: Response) => {
             stations: nearbyStations,
         });
     } catch (error) {
-        console.error("Error user:", error);
+        console.error("Error getStations:", error);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
         });
+    }
+};
+
+export const getAvailableSlot = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!id) {
+        res.status(400).json({ message: "Missing id in query params" });
+
+        return;
+    }
+
+    const fetchData = async (url: string, field: string) => {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error("Error fetching data:", response.statusText);
+                if (response.status === 429) {
+                    res.status(429).json({
+                        message: "Too many requests, please try again later",
+                    });
+
+                    return;
+                }
+                res.status(400).json({
+                    message: "Error fetching data from API",
+                });
+
+                return;
+            }
+
+            const data = await response.json();
+
+            if (!data || !data[0] || !data[0][field]) {
+                res.status(400).json({ message: "No available data" });
+
+                return;
+            }
+
+            res.status(200).json({ availableSlots: data[0][field].value });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+            });
+        }
+    };
+
+    if (id.includes("parking")) {
+        await fetchData(
+            `https://portail-api-data.montpellier3m.fr/offstreetparking?id=${encodeURIComponent(
+                id
+            )}`,
+            "availableSpotNumber"
+        );
+    } else if (id.includes("station")) {
+        await fetchData(
+            `https://portail-api-data.montpellier3m.fr/bikestation?id=${encodeURIComponent(
+                id
+            )}`,
+            "availableBikeNumber"
+        );
+    } else {
+        res.status(400).json({ message: "Invalid ID type" });
     }
 };
 
