@@ -1,6 +1,6 @@
 // LIBRARIES
 import {useEffect, useState} from 'react';
-import { MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
+import { Circle, MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
 // COMPONENTS
 import UIComponent from '../Components/UIComponent';
 import RecenterMap from '../Components/RecenterMap';
@@ -170,6 +170,7 @@ const MainPage = () => {
       zoom={15} 
       scrollWheelZoom={true}
     >
+      <Circle center={mapCenter} radius={distance} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
