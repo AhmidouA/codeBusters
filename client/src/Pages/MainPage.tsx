@@ -145,7 +145,7 @@ const MainPage = () => {
 
   const handleAddressSelect = (coords: [number, number]) => {
     setDestinationLocation(coords === userLocation ? destinationLocation : coords)
-    if(destinationLocation || coords === userLocation){
+    if(coords != undefined){
       setMapCenter(coords);
       
       fetch(`http://localhost:3001/api/station?latitude=${coords[0]}&longitude=${coords[1]}&radius=${distance}`)
