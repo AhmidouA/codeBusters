@@ -9,6 +9,12 @@ import prisma from "../config/prisma/db.config";
 
 const DEFAULT_RADIUS = 500;
 
+/**
+ * Récupère les places disponibles pour une station ou un parking spécifique.
+ *
+ * @param req - The HTTP request object.
+ * @param res - The HTTP response object.
+ */
 export const getStations = async (req: Request, res: Response) => {
     try {
         const { latitude, longitude, radius } = req.query;
@@ -46,7 +52,7 @@ export const getStations = async (req: Request, res: Response) => {
 
 /**
  * Récupère les places disponibles pour une station ou un parking spécifique.
- * 
+ *
  * @param req - The HTTP request object.
  * @param res - The HTTP response object.
  */
@@ -61,7 +67,7 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
 
     /**
      * Fetch la data d'un URL et retourne la valeur de champ.
-     * 
+     *
      * @param url - The URL to fetch data from.
      * @param field - The field to extract from the fetched data.
      */
@@ -72,7 +78,7 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
             // Check si la reponse est ok
             if (!response.ok) {
                 console.error("Error fetching data:", response.statusText);
-                
+
                 // Check si l'erreur est due au rate limit
                 if (response.status === 429) {
                     res.status(429).json({
@@ -108,12 +114,16 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
     // Fetch la data d'un parking ou d'une station selon l'id
     if (id.includes("parking")) {
         await fetchData(
-            `https://portail-api-data.montpellier3m.fr/offstreetparking?id=${encodeURIComponent(id)}`,
+            `https://portail-api-data.montpellier3m.fr/offstreetparking?id=${encodeURIComponent(
+                id
+            )}`,
             "availableSpotNumber"
         );
     } else if (id.includes("station")) {
         await fetchData(
-            `https://portail-api-data.montpellier3m.fr/bikestation?id=${encodeURIComponent(id)}`,
+            `https://portail-api-data.montpellier3m.fr/bikestation?id=${encodeURIComponent(
+                id
+            )}`,
             "availableBikeNumber"
         );
     } else {
@@ -123,7 +133,7 @@ export const getAvailableSlot = async (req: Request, res: Response) => {
 
 /**
  * Fetch les stations de vélo à partir du lien fourni et les importe dans la base de données.
- * 
+ *
  * @param req - The HTTP request object.
  * @param res - The HTTP response object.
  */
@@ -182,7 +192,7 @@ export const importBikeStations = async (req: Request, res: Response) => {
 
 /**
  * Fetch les parkings de voitures à partir du lien fourni et les importe dans la base de données.
- * 
+ *
  * @param req - The HTTP request object.
  * @param res - The HTTP response object.
  */
